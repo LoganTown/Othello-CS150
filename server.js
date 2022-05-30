@@ -23,7 +23,7 @@ let file = new static.Server(directory);
 
 let app = http.createServer( 
     function(request,response) {
-        request.addListender('end', 
+        request.addListener('end', 
             function(){
                 file.serve(request,response);
             }
