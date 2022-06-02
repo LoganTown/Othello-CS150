@@ -59,7 +59,7 @@ socket.on('send_chat_message_response', (payload) => {
         console.log(payload.message);
         return;
     }  
-    let newString = '<p class=\'chat_message\'><b>'+payload.username+'</b>: joined the '+payload.message+'</p>';
+    let newString = '<p class=\'chat_message\'><b>'+payload.username+'</b>:  '+payload.message+'</p>';
     $('#messages').prepend(newString);
 })
 
