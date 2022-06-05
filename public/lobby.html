@@ -24,7 +24,7 @@
     <div class ="container-fluid">
       <div class="row m-3 headerrow"> 
         <div class="col text-center"> 
-          <h3>Lobby</h3>
+          <h3 id="lobbyTitle">Lobby</h3>
         </div>
       </div>
 
@@ -48,9 +48,10 @@
 
 
 
-
+    <!-- The order matters for load reasons, goes bootstrap, jquery, jquery UI, socket, and our code -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX" crossorigin="anonymous"></script>
     <script src="https://cdn.socket.io/4.5.1/socket.io.min.js" integrity="sha384-dZoVd6Ro98cGu3vTPJeEj0bVrpH2p/SgENb5iMjpBTSMobGNb6Fg+M5CJ2RHq+H2" crossorigin="anonymous"></script>
     <script src="assets/js/main.js"></script>
 
