@@ -31,6 +31,12 @@ socket.on('log',function(array) {
     console.log.apply(console,array);
 });
 
+function makeInviteButton() {
+    let newHTML = "<button type='button' class='btn btn-outline-primary'>Invite</button>";
+    let newNode = $(newHTML);
+    return newNode;
+}
+
 socket.on('join_room_response', (payload) => {
     if(( typeof payload == 'undefined') || (payload === null)){
         console.log('Server did not send a payload');
@@ -40,7 +46,69 @@ socket.on('join_room_response', (payload) => {
         console.log(payload.message);
         return;
     }  
+    /* if we are being notified of ourselves then ignore message and return*/
+    if (payload.socket_id === socket.id){
+        return;
+    }
+
+    let domElements = $('.socket_'+payload.socket_id);
+    //if we are being repeatedly notified then return
+    if (domElements.length !== 0){
+        return;
+    }
+
+    //comment thing
+    let nodeA = $("<div></div>");
+    nodeA.addClass("row");
+    nodeA.addClass("align-items-center");
+    nodeA.addClass("socket_"+payload.socket_id);
+    nodeA.hide();
+
+    let nodeB = $("<div></div>");
+    nodeB.addClass("col");
+    nodeB.addClass("text-end");
+    nodeB.addClass("socket_"+payload.socket_id);
+    nodeB.append('<h4>'+payload.username+'</h4>');
+
+    let nodeC = $("<div></div>");
+    nodeC.addClass("col");
+    nodeC.addClass("text-start");
+    nodeC.addClass("socket_"+payload.socket_id);
+    let buttonC = makeInviteButton();
+    nodeC.append(buttonC);
+
+    nodeA.append(nodeB);
+    nodeA.append(nodeC);
+
+    $("#players").append(nodeA);
+    nodeA.show("fade",1000);
+
+
+    /*announcing in the chat that someone has arrived */
     let newHTML = '<p class=\'join_room_response\'>'+payload.username+' joined the '+payload.room+'. (There are '+ payload.count+' users in this room)</p>';
+    let newNode = $(newHTML);
+    newNode.hide()
+    $('#messages').prepend(newNode);
+    newNode.show("fade",500);
+})
+
+
+socket.on('player_disconnected', (payload) => {
+    if(( typeof payload == 'undefined') || (payload === null)){
+        console.log('Server did not send a payload');
+        return;
+    }
+
+    if(payload.socket_id === socket.id){
+        return;
+    }
+
+    let domElements = $('.socket_'+payload.socket_id);
+    if (domElements.length !== 0){
+        domElements.hide("fade", 500);
+    }
+
+    let newHTML = '<p class=\'left_room_response\'>'+payload.username+' left the '+payload.room+'. (There are '+ payload.count+' users in this room)</p>';
     let newNode = $(newHTML);
     newNode.hide()
     $('#messages').prepend(newNode);

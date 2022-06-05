@@ -8,15 +8,19 @@
       .headerrow {
         background-color: darkseagreen;
       }
-      .join_room_response {
-        margin: 1px 1px 1px 10px;
-        background-color: rgb(168, 177, 168);
+      #messagePane {
+        background-color: rgb(138, 230, 138);
+      }
+      .join_room_response,
+      .left_room_response {
+        background-color: rgb(208, 214, 208);
       }
       .chat_message {
         font-size:125%;
         margin: 1px 1px 1px 1px;
-        color:rgb(7, 22, 230);
+        color:rgb(0, 0, 0);
       }
+
     </style>
     <title>Reversi: Lobby</title>
   </head>
@@ -31,15 +35,22 @@
       <div class="row m-3"> 
         <div class="col"> 
           <div class="row align-items-center justify-content-center m-3"> 
-            <div class="col-8">
+            <div class="col-md-4">
+              <h4>Players</h4>
+              <div id="players" class="align-items-end text-right m-3">
+              </div>
+            </div>
+            <div class="col-8" id="messagePane">
+              <div>
+                <h4>Messages</h4>
+              </div>
               <div class="input-group">
                 <input type="text" class="form-control text-nowrap" id="chatMessage" placeholder="enter your message here" aria-label="Enter your message to send to your chat room"/>
                 <button type="submit" class="btn btn-primary text-nowrap" id="chatButton" onclick="sendChatMessage()">Send</button>
-              </div>        
+              </div>       
+              <div id="messages"> 
             </div>
           </div>
-          <h4>Messages</h4>
-          <div id="messages">
           </div>
         </div>
       </div>
