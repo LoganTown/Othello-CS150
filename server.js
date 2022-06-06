@@ -157,7 +157,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         serverLog('a page disconnected from the server: ' + socket.id);
-        if((typeof players[socket.id] != 'undefined') && (players[socket.id] != null)){
+        if ((typeof players[socket.id] != 'undefined') && (players[socket.id] != null)){
             let payload = {
                 username: players[socket.id].username,
                 room: players[socket.id].room,
@@ -165,13 +165,11 @@ io.on('connection', (socket) => {
                 socket_id: socket.id
             };
             let room = players[socket.id].room;
-            delete player[socket.id];
+            delete players[socket.id];
             /* tell everyone who left the room*/
-            io.of("/").to(room).emit('player_disconnected',payload);
-            serverLog('player_disconnected succeeded',JSON.stringify(payload));
+            io.of("/").to(room).emit('player_disconnected' , payload);
+            serverLog('player_disconnected succeeded' , JSON.stringify(payload));
         }
-
-
     });
 
 

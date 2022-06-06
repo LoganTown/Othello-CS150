@@ -94,7 +94,7 @@ socket.on('join_room_response', (payload) => {
 
 
 socket.on('player_disconnected', (payload) => {
-    if(( typeof payload == 'undefined') || (payload === null)){
+    if ((typeof payload == 'undefined') || (payload === null)) {
         console.log('Server did not send a payload');
         return;
     }
@@ -104,11 +104,11 @@ socket.on('player_disconnected', (payload) => {
     }
 
     let domElements = $('.socket_'+payload.socket_id);
-    if (domElements.length !== 0){
-        domElements.show("fade", 500);
+    if(domElements.length !== 0){
+        domElements.hide("fade",500);
     }
 
-    let newHTML = '<p class=\'left_room_response\'>'+payload.username+' left the '+payload.room+'. (There are '+ payload.count+' users in this room)</p>';
+    let newHTML = '<p class=\'left_room_response\'>' + payload.username + ' left the ' + payload.room + '. (There are ' + payload.count + ' users in this room)</p>';
     let newNode = $(newHTML);
     newNode.hide()
     $('#messages').prepend(newNode);
