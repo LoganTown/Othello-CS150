@@ -105,7 +105,7 @@ socket.on('player_disconnected', (payload) => {
 
     let domElements = $('.socket_'+payload.socket_id);
     if (domElements.length !== 0){
-        domElements.hide("fade", 500);
+        domElements.show("fade", 500);
     }
 
     let newHTML = '<p class=\'left_room_response\'>'+payload.username+' left the '+payload.room+'. (There are '+ payload.count+' users in this room)</p>';
