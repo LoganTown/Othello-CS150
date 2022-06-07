@@ -47,7 +47,6 @@ const { Server } = require("socket.io");
 const io = new Server(app);
 
 io.on('connection', (socket) => {
-
     /*Output a log message on server and send it to clients */
     function serverLog(...messages) {
         io.emit('log', ['**** Message from the server:\n']);
@@ -56,11 +55,7 @@ io.on('connection', (socket) => {
             console.log(item);
         });
     }
-
     serverLog('a page connected to the server: ' + socket.id);
-
-
-
 
     /*join_room command handler
     expected payload:
@@ -83,9 +78,6 @@ io.on('connection', (socket) => {
         }
     */
 
-
-
-
     //may need to switch payload to something else
     socket.on('join_room', (payload) => {
         serverLog('Server received a command', '\'join_room\'', JSON.stringify(payload));
@@ -98,7 +90,6 @@ io.on('connection', (socket) => {
             serverLog('join_room command failed', JSON.stringify(response));
             return;
         }
-
         let room = payload.room;
         let username = payload.username;
         if ((typeof room == 'undefined') || (room === null)) {
@@ -108,7 +99,6 @@ io.on('connection', (socket) => {
             socket.emit('join_room_response', response);
             serverLog('join_room command failed', JSON.stringify(response));
             return;
-
         }
         if ((typeof username == 'undefined') || (username === null)) {
             response = {};
@@ -117,9 +107,7 @@ io.on('connection', (socket) => {
             socket.emit('join_room_response', response);
             serverLog('join_room command failed', JSON.stringify(response));
             return;
-
         }
-
         //handle the command
         socket.join(room);
 
@@ -150,6 +138,9 @@ io.on('connection', (socket) => {
                     //tell everyone a new user has joined the chat
                     io.of('/').to(room).emit('join_room_response', response);
                     serverLog('join_room succeeded ', JSON.stringify(response));
+                    if (room !== "Lobby") {
+                        send_game_update(socket, room, 'initial update');
+                    }
                 }
             }
         });
@@ -303,14 +294,11 @@ io.on('connection', (socket) => {
                 }
                 socket.to(requested_user).emit("uninvited", response);
                 serverLog('uninvite command succeeded', JSON.stringify(response));
-
-
             }
         });
     });
 
 //working here
-
 socket.on('game_start', (payload) => {
     serverLog('Server received a command', '\'game_start\'', JSON.stringify(payload));
     //check the data coming from the client is good
@@ -333,7 +321,6 @@ socket.on('game_start', (payload) => {
         socket.emit('game_start_response', response);
         serverLog('game_start command failed', JSON.stringify(response));
         return;
-
     }
     if ((typeof room == 'undefined') || (room === null) || (room === "")) {
         response = {
@@ -352,9 +339,7 @@ socket.on('game_start', (payload) => {
         socket.emit('game_start_response', response);
         serverLog('game_start command failed', JSON.stringify(response));
         return;
-
     }
-
     //make sure that the player to engage is present
     io.in(room).allSockets().then((sockets) => {
         //the engaged player isnt in the room
@@ -381,7 +366,6 @@ socket.on('game_start', (payload) => {
         }
     });
 });
-
     socket.on('disconnect', () => {
         serverLog('a page disconnected from the server: ' + socket.id);
         if ((typeof players[socket.id] != 'undefined') && (players[socket.id] != null)) {
@@ -398,8 +382,6 @@ socket.on('game_start', (payload) => {
             serverLog('player_disconnected succeeded', JSON.stringify(payload));
         }
     });
-
-
 
     /*send_chat command handler
     expected payload:
@@ -421,9 +403,6 @@ socket.on('game_start', (payload) => {
         }
     */
 
-
-
-
     //may need to switch payload to something else
     socket.on('send_chat_message', (payload) => {
         serverLog('Server received a command', '\'send_chat_message\'', JSON.stringify(payload));
@@ -436,7 +415,6 @@ socket.on('game_start', (payload) => {
             serverLog('send_chat_message command failed', JSON.stringify(response));
             return;
         }
-
         let room = payload.room;
         let username = payload.username;
         let message = payload.message;
@@ -447,7 +425,6 @@ socket.on('game_start', (payload) => {
             socket.emit('send_chat_message_response', response);
             serverLog('send_chat_message command failed', JSON.stringify(response));
             return;
-
         }
         if ((typeof username == 'undefined') || (username === null)) {
             response = {};
@@ -465,7 +442,6 @@ socket.on('game_start', (payload) => {
             serverLog('send_chat_message command failed', JSON.stringify(response));
             return;
         }
-
         //handle the command
         let response = {};
         response.result = 'success';
@@ -475,13 +451,72 @@ socket.on('game_start', (payload) => {
         //tell everyone in the room what the message is
         io.of('/').to(room).emit('send_chat_message_response', response);
         serverLog('send_chat_message command succeeded', JSON.stringify(response));
-
     });
 });
 
 
 
 
+
+
+/*******************************************************/
+/* Code related to game state */
+
+let games = [];
+
+function create_new_game() {
+    let new_game = {};
+    new_game.player_white = {};
+    new_game.player_white.socket = "";
+    new_game.player_white.username = "";
+    new_game.player_black = {};
+    new_game.player_black.socket = "";
+    new_game.player_black.username = "";
+
+    var d = new Date();
+    new_game.last_move_time = d.getTime;
+
+    new_game.whose_turn = 'white';
+
+    new_game.board = [
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ','w','b',' ',' ',' '],
+        [' ',' ',' ','b','w',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' ']
+    ];
+
+    return new_game;
+
+}
+
+function send_game_update(socket, game_id, message) {
+    //check to see if a game with game_id exists
+    //make sure that only 2 people are in the room
+    //assign this socket a color
+    //send game update
+    //check if the game is over
+
+    //check to see if a game with game_id exists
+    if ((typeof games[game_id] == 'undefined') || (games[game_id] === null)) {
+        console.log("No game exists with game_id:" + game_id + ". Making a new game for " + socket.id);
+        games[game_id] = create_new_game();
+    }
+
+    //send game update
+    let payload = {
+        result: 'success',
+        game_id: game_id,
+        game: games[game_id],
+        message: message
+    }
+    io.of("/").to(game_id).emit('game_update', payload);
+
+
+}
 
 
 
