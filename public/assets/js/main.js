@@ -59,7 +59,7 @@ function makeInvitedButton(socket_id) {
     return newNode;
 }
 
-function makePlayButton() {
+function makePlayButton(socket_id) {
     let newHTML = "<button type='button' class='btn btn-success'>Play</button>";
     let newNode = $(newHTML);
     newNode.click( () => {
@@ -114,7 +114,7 @@ socket.on('uninvited', (payload) => {
         console.log(payload.message);
         return;
     }
-    let newNode = makeInvite(payload.socket_id);
+    let newNode = makeInviteButton(payload.socket_id);
     $('.socket_' + payload.socket_id + ' button').replaceWith(newNode)
 })
 

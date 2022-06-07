@@ -225,7 +225,7 @@ io.on('connection', (socket) => {
                     result: 'success',
                     socket_id: socket.id
                 }
-                socket.to(rquested_user).emit("invited", response);
+                socket.to(requested_user).emit("invited", response);
                 serverLog('invite command succeeded', JSON.stringify(response));
 
 
@@ -250,7 +250,7 @@ io.on('connection', (socket) => {
         if ((typeof requested_user == 'undefined') || (requested_user === null) || (requested_user === "")) {
             response = {
                 result: 'fail',
-                message: 'client did not request a valid user to uninvite to play'
+                message: 'client did not request a valid user to uninvite'
             }
             socket.emit('uninvited', response);
             serverLog('uninvite command failed', JSON.stringify(response));
@@ -262,7 +262,7 @@ io.on('connection', (socket) => {
                 result: 'fail',
                 message: 'the user that was uninvited is not in a room'
             }
-            socket.emit('uninvite_response', response);
+            socket.emit('uninvited', response);
             serverLog('uninvited command failed', JSON.stringify(response));
             return;
         }
@@ -301,7 +301,7 @@ io.on('connection', (socket) => {
                     result: 'success',
                     socket_id: socket.id
                 }
-                socket.to(rquested_user).emit("uninvited", response);
+                socket.to(requested_user).emit("uninvited", response);
                 serverLog('uninvite command succeeded', JSON.stringify(response));
 
 
@@ -376,7 +376,7 @@ socket.on('game_start', (payload) => {
                 socket_id: requested_user
             }
             socket.emit("game_start_response", response);
-            socket.to(rquested_user).emit("game_start_response", response);
+            socket.to(requested_user).emit("game_start_response", response);
             serverLog('game_start command succeeded', JSON.stringify(response));
         }
     });
