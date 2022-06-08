@@ -259,24 +259,37 @@ let old_board = [
     ['?','?','?','?','?','?','?','?']
 ];
 
+let my_color = "";
+
 socket.on('game_update', (payload) => {
-    if (( typeof payload == 'undefined') || (payload === null)){
+    if ((typeof payload == 'undefined') || (payload === null)){
         console.log('Server did not send a payload');
         return;
     }
-    if(payload.result === 'fail'){
+    if (payload.result === 'fail'){
         console.log(payload.message);
         return;
     } 
 
     let board = payload.game.board;
-    if (( typeof board == 'undefined') || (board === null)){
+    if ((typeof board == 'undefined') || (board === null)){
         console.log('Server did not send a valid board to display');
         return;
     }
 
     //update my color
+    if (socket.id === payload.game.player_white.socket) {
+        my_color = 'white';
+    } 
+    else if (socket.id === payload.game.player_black.socket) {
+        my_color = 'black';
+    } 
+    else {
+        window.location.href = 'lobby.html?username=' + username;
+        return;
+    }
 
+    $("#my_color").html('<h3 id="my_color">I am ' + my_color + '</h3>');
 
     //animate all changes to the board
     for (let row = 0; row < 8; row++) {
@@ -331,13 +344,39 @@ socket.on('game_update', (payload) => {
                 const t = Date.now();
                 $('#' + row + '_' + column).html('<img class="img-fluid" src="assets/images/' + graphic + '?time=' + t + '" alt="' + altTag + '" />');
 
-                
+                $('#' + row + '_' + column).off('click');
+                if (board[row][column] === ' ') {
+                    $('#' + row + '_' + column).addClass('hovered_over');
+                    $('#' + row + '_' + column).click(((r, c) => {
+                        return (() => {
+                            let payload = {
+                                row: r,
+                                column: c,
+                                color: my_color
+                            };
+                            console.log('**** Client log message, sending \'play_token\' command: '+JSON.stringify(payload));
+                            socket.emit('play_token', payload)
+                        });
+                    })(row, column));
+                }
+                else{
+                    $('#' + row + '_' + column).removeClass('hovered_over');
+                }
             }
         }
     }
     old_board = board;
+})
 
-
+socket.on('play_token_response', (payload) => {
+    if (( typeof payload == 'undefined') || (payload === null)){
+        console.log('Server did not send a payload');
+        return;
+    }
+    if(payload.result === 'fail'){
+        console.log(payload.message);
+        return;
+    } 
 })
 
 /* request to join chatroom*/
