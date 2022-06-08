@@ -618,7 +618,7 @@ function send_game_update(socket, game_id, message) {
                 }
                 else if (games[game_id].player_black.socket === "") {
                     //this play should be black
-                    console.log("Black is assigned to: "+ first);
+                    console.log("Black is assigned to: " + first);
                     games[game_id].player_black.socket = first;
                     games[game_id].player_black.username = players[first].username;
                 } else {
@@ -660,12 +660,6 @@ function send_game_update(socket, game_id, message) {
         }
         io.of("/").to(game_id).emit('game_update', payload);
     })
-
-
-
-
-
-
     //check if game is over
 
 }

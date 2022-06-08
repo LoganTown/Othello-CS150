@@ -272,7 +272,7 @@ socket.on('game_update', (payload) => {
     } 
 
     let board = payload.game.board;
-    if ((typeof board == 'undefined') || (board === null)){
+    if ((typeof board == 'undefined') || (board === null)) {
         console.log('Server did not send a valid board to display');
         return;
     }
@@ -359,7 +359,7 @@ socket.on('game_update', (payload) => {
                         });
                     })(row, column));
                 }
-                else{
+                else {
                     $('#' + row + '_' + column).removeClass('hovered_over');
                 }
             }
@@ -369,11 +369,11 @@ socket.on('game_update', (payload) => {
 })
 
 socket.on('play_token_response', (payload) => {
-    if (( typeof payload == 'undefined') || (payload === null)){
+    if ((typeof payload == 'undefined') || (payload === null)) {
         console.log('Server did not send a payload');
         return;
     }
-    if(payload.result === 'fail'){
+    if(payload.result === 'fail') {
         console.log(payload.message);
         return;
     } 
