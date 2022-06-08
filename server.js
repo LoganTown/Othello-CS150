@@ -821,20 +821,37 @@ function send_game_update(socket, game_id, message) {
         io.of("/").to(game_id).emit('game_update', payload);
     })
     //check if game is over
-    let count = 0;
+    let legal_moves = 0;
+    let whitesum = 0;
+    let blacksum = 0;
+
     for (let row = 0; row < 8; row++){
         for (let column = 0; column < 8; column++) {
-            if (games[game_id].board[row][column] != ' ') {
-                count++;
+            if (games[game_id].legal_moves[row][column] !== ' ') {
+                legal_moves++;
+            }
+            if (games[game_id].board[row][column] === 'w') {
+                whitesum++;
+            }
+            if (games[game_id].board[row][column] === 'b') {
+                blacksum++;
             }
         }
     }
-    if (count === 64) {
+    if (legal_moves === 0) {
+        let winner = "Tie Game";
+        if (whitesum > blacksum){
+            winner = "white";
+        }
+        if (whitesum < blacksum){
+            winner = "black";
+        }
+
         let payload = {
             result: 'success',
             game_id: game_id,
             game: games[game_id],
-            who_won: 'everyone'
+            who_won: winner
         }
         io.in(game_id).emit('game_over', payload);
 
