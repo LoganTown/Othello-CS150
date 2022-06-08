@@ -625,8 +625,11 @@ function create_new_game() {
 
 function check_line_match(color,dr,dc,r,c,board){
 
-    if(board[r][c] === color){
+    if(board[r][c] === color) {
         return true;
+    }
+    if(board[r][c] === ' ') {
+        return false;
     }
     //check to make sure we arent going to talk off the board
     if (( r + dr < 0) || ( r + dr > 7)) {
