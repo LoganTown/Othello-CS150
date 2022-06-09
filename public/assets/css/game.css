@@ -1,5 +1,5 @@
 body{
-    background-color: rgb(153, 153, 153);
+    background-color: grey;
 }
 
 .headerrow, #messagePane {
@@ -30,5 +30,5 @@ table#game_board td {
 }
 
 td.hovered_over:hover{
-    background-image: url('assets/images/hover.gif');
+    background-image: url("assets/images/hover.gif");
 }

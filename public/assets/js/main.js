@@ -328,7 +328,6 @@ socket.on('game_update', (payload) => {
                     graphic = "empty.gif";
                     altTag = "empty space";
                 }
-                //maybe replace empty to white with something not animated, idk
                 else if((old_board[row][column] === '?') && (board[row][column] === 'w')) {
                     graphic = "empty_to_white.gif";
                     altTag = "white token";
